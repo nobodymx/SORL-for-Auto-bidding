@@ -1,0 +1,111 @@
+import sdk.Model.DDPG
+import sdk.Agent.Agents
+import sdk.Environment.RealAdvertisingSystem
+import sdk.Environment.VirtualAdvertisingSystem
+import sdk.Common.Utils
+import run.run_evaluations
+import sdk.Model.BackGroundActors
+import sdk.Model.OnlineExplorationPolicy
+import gin
+
+
+NO_SER_LOAD_PATH = "saved_models/sorl/initial_safe_policy"
+PHI_NAME = "BCQ"
+RANDOM_SEED = 0
+GPU = '0'
+TAKE_ACTION_MODE = "sorl"
+ITERATION = 1
+
+EXPLORE_FLAG = True
+EVALUATION_EPISODE = 1
+STEP = 96
+NUM_AGENT = 100
+DIM_OBS = 3
+DIM_ACTIONS = 1
+TEST_MODE = "test"
+REPRESENT_INDEX = 0
+TERMINAL_BUDGET_THRESHOLD = 5
+RANKING_LOG_EPI = 1
+BUFFER_SIZE = 100000
+SAMPLE_SIZE = 2000
+ALGORITHM = "DDPG"
+FIXED_RANDOM_SEED = 0
+LOAD_PATH_PHI = "saved_models/sorl/iteration_"
+
+
+
+MAX_BUDGET = 4000
+MIN_BUDGET = 1000
+MAX_PV_NUM = 500
+MIN_PV_NUM = 100
+REPRESENT_BUDGET = 1500
+
+
+RealAdvertisingSystem.num_of_campaign = %NUM_AGENT
+RealAdvertisingSystem.reserve_price = 0.01
+RealAdvertisingSystem.T = %STEP
+RealAdvertisingSystem.fixed_random_seed = %FIXED_RANDOM_SEED
+RealAdvertisingSystem.min_pv_num = %MIN_PV_NUM
+RealAdvertisingSystem.max_pv_num = %MAX_PV_NUM
+RealAdvertisingSystem.terminate_threshold = %TERMINAL_BUDGET_THRESHOLD
+
+VirtualAdvertisingSystem.num_campaign = %NUM_AGENT
+VirtualAdvertisingSystem.num_epi = %RANKING_LOG_EPI
+VirtualAdvertisingSystem.num_step = %STEP
+VirtualAdvertisingSystem.log_name = "virtual_advertising_stage_2_log"
+VirtualAdvertisingSystem.terminate_threshold = %TERMINAL_BUDGET_THRESHOLD
+
+
+Agents.num_agent = %NUM_AGENT
+Agents.algorithm_name = %ALGORITHM
+Agents.bgactors = @BGActors
+Agents.representation_index = %REPRESENT_INDEX
+Agents.dim_obs = %DIM_OBS
+Agents.stop_threshold = %TERMINAL_BUDGET_THRESHOLD
+Agents.explore_flag = %EXPLORE_FLAG
+Agents.iteration = %ITERATION
+Agents.explore_policy = @OnlineExplorationPolicy
+Agents.phi_name = %PHI_NAME
+Agents.network_random_seed = %RANDOM_SEED
+
+
+BackGroundActors.Actor.dim_observation = %DIM_OBS
+BackGroundActors.Actor.dim_action = %DIM_ACTIONS
+
+BGActors.dim_obs = %DIM_OBS
+BGActors.dim_actions = %DIM_ACTIONS
+BGActors.fixed_random_seed = %FIXED_RANDOM_SEED
+
+
+DDPG.Critic.dim_observation = %DIM_OBS
+DDPG.Critic.dim_action = %DIM_ACTIONS
+
+DDPG.Actor.dim_observation = %DIM_OBS
+DDPG.Actor.dim_action = %DIM_ACTIONS
+
+DDPG.dim_obs = %DIM_OBS
+DDPG.dim_actions = %DIM_ACTIONS
+DDPG.gamma = 1
+DDPG.tau = 0.1
+DDPG.critic_lr = 0.001
+DDPG.actor_lr = 0.00001
+DDPG.buffer_size = %BUFFER_SIZE
+DDPG.sample_size = %SAMPLE_SIZE
+
+
+run_evaluations.evaluation_episode = %EVALUATION_EPISODE
+run_evaluations.len_step = %STEP
+run_evaluations.representation_index = %REPRESENT_INDEX
+run_evaluations.representation_budget = %REPRESENT_BUDGET
+run_evaluations.num_agent = %NUM_AGENT
+run_evaluations.dim_obs = %DIM_OBS
+run_evaluations.fixed_random_seed = %FIXED_RANDOM_SEED
+run_evaluations.max_budget = %MAX_BUDGET
+run_evaluations.min_budget = %MIN_BUDGET
+run_evaluations.load_path = %NO_SER_LOAD_PATH
+run_evaluations.gpu = %GPU
+run_evaluations.take_action_mode = %TAKE_ACTION_MODE
+
+
+normalize_state.num_step = %STEP
+normalize_state.max_budget = %MAX_BUDGET

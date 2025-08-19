@@ -1,0 +1,204 @@
+import sdk.Model.DDPG
+import sdk.Model.CQL
+import sdk.Model.V_CQL
+import sdk.Model.BCQ
+import sdk.Agent.Agents
+import sdk.Model.BackGroundActors
+import sdk.Environment.RealAdvertisingSystem
+import sdk.Common.Utils
+import run.run_sorl
+import gin
+import sdk.Model.OnlineExplorationPolicy
+
+
+RANDOM_SEED = 20
+
+ITERATION = 0
+GPU = '2'
+ALGORITHM = "BCQ"
+
+TD_LOSS_RATE = 0.5
+CQL_LOSS_RATE = 0.01
+VCQL_LOSS_RATE = 0.1
+
+TD_SWITCH = "on"
+CQL_SWITCH = "on"
+VCQL_SWITCH = "on"
+
+LOAD_PREVIOUS_NETWORK = False
+EXPLORE_SIZE = 10000
+EXPLORE_FLAG = True
+
+
+
+EPISODE = 10000000000
+STEP = 96
+BUFFER_SIZE = 100000
+SAMPLE_SIZE = 20000
+NUM_AGENT = 100
+DIM_OBS = 3
+DIM_ACTIONS = 1
+REPRESENT_INDEX = 0
+CRITIC_LR = 0.0001
+ACTOR_LR = 0.0001
+TAU = 0.01
+LOAD_PATH = "saved_models/sorl/iteration_"
+SAVE_PATH = "saved_models/sorl/iteration_"
+TERMINAL_BUDGET_THRESHOLD = 5
+EVALUATION_INTERVAL = 100
+FIXED_RANDOM_SEED = 0
+BCQ_ACTION_SCALE = 0.2
+
+
+MAX_BUDGET = 4000
+MIN_BUDGET = 1000
+MAX_PV_NUM = 500
+MIN_PV_NUM = 100
+REPRESENT_BUDGET = 1500
+
+Agents.num_agent = %NUM_AGENT
+Agents.bgactors = @BGActors
+Agents.algorithm_name = %ALGORITHM
+Agents.representation_index = %REPRESENT_INDEX
+Agents.dim_obs = %DIM_OBS
+Agents.stop_threshold = %TERMINAL_BUDGET_THRESHOLD
+Agents.explore_flag = %EXPLORE_FLAG
+Agents.explore_policy = @OnlineExplorationPolicy
+Agents.load_path_initial_safe_policy = "saved_models/sorl/initial_safe_policy/actor.pkl"
+Agents.iteration = %ITERATION
+Agents.network_random_seed = %RANDOM_SEED
+
+
+RealAdvertisingSystem.num_of_campaign = %NUM_AGENT
+RealAdvertisingSystem.reserve_price = 0.01
+RealAdvertisingSystem.T = %STEP
+RealAdvertisingSystem.fixed_random_seed = %FIXED_RANDOM_SEED
+RealAdvertisingSystem.min_pv_num = %MIN_PV_NUM
+RealAdvertisingSystem.max_pv_num = %MAX_PV_NUM
+
+random_sampling.sample_number = %SAMPLE_SIZE
+random_sampling.buffer_size = %BUFFER_SIZE
+
+normalize_state.num_step = %STEP
+normalize_state.max_budget = %MAX_BUDGET
+
+
+DDPG.Critic.dim_observation = %DIM_OBS
+DDPG.Critic.dim_action = %DIM_ACTIONS
+
+DDPG.Actor.dim_observation = %DIM_OBS
+DDPG.Actor.dim_action = %DIM_ACTIONS
+
+DDPG.dim_obs = %DIM_OBS
+DDPG.dim_actions = %DIM_ACTIONS
+DDPG.gamma = 1
+DDPG.tau = %TAU
+DDPG.critic_lr = %CRITIC_LR
+DDPG.actor_lr = %ACTOR_LR
+DDPG.buffer_size = %BUFFER_SIZE
+DDPG.sample_size = %SAMPLE_SIZE
+
+CriticBCQ.dim_observation = %DIM_OBS
+CriticBCQ.dim_action = %DIM_ACTIONS
+
+ActorBCQ.dim_observation = %DIM_OBS
+ActorBCQ.dim_action = %DIM_ACTIONS
+ActorBCQ.action_scale = %BCQ_ACTION_SCALE
+
+
+BCQ.dim_obs = %DIM_OBS
+BCQ.dim_actions = %DIM_ACTIONS
+BCQ.gamma = 1
+BCQ.tau = %TAU
+BCQ.critic_lr = %CRITIC_LR
+BCQ.actor_lr = %ACTOR_LR
+BCQ.buffer_size = %BUFFER_SIZE
+BCQ.sample_size = %SAMPLE_SIZE
+BCQ.network_random_seed = %RANDOM_SEED
+BCQ.explore_size = %EXPLORE_SIZE
+
+CriticCQL.dim_observation = %DIM_OBS
+CriticCQL.dim_action = %DIM_ACTIONS
+
+ActorCQL.dim_observation = %DIM_OBS
+ActorCQL.dim_action = %DIM_ACTIONS
+
+CQL.dim_obs = %DIM_OBS
+CQL.dim_actions = %DIM_ACTIONS
+CQL.gamma = 1
+CQL.tau = %TAU
+CQL.critic_lr = %CRITIC_LR
+CQL.actor_lr = %ACTOR_LR
+CQL.buffer_size = %BUFFER_SIZE
+CQL.sample_size = %SAMPLE_SIZE
+CQL.cql_rate = %CQL_LOSS_RATE
+CQL.TD_error_rate = %TD_LOSS_RATE
+CQL.TD_switch = %TD_SWITCH
+CQL.CQL_switch = %CQL_SWITCH
+CQL.network_random_seed = %RANDOM_SEED
+CQL.explore_size = %EXPLORE_SIZE
+
+
+CriticVCQL.dim_observation = %DIM_OBS
+CriticVCQL.dim_action = %DIM_ACTIONS
+
+ActorVCQL.dim_observation = %DIM_OBS
+ActorVCQL.dim_action = %DIM_ACTIONS
+
+VCQL.dim_obs = %DIM_OBS
+VCQL.dim_actions = %DIM_ACTIONS
+VCQL.gamma = 1
+VCQL.tau = %TAU
+VCQL.critic_lr = %CRITIC_LR
+VCQL.actor_lr = %ACTOR_LR
+VCQL.buffer_size = %BUFFER_SIZE
+VCQL.sample_size = %SAMPLE_SIZE
+VCQL.cql_rate = %CQL_LOSS_RATE
+VCQL.vcql_rate = %VCQL_LOSS_RATE
+VCQL.TD_error_rate = %TD_LOSS_RATE
+VCQL.TD_switch = %TD_SWITCH
+VCQL.CQL_switch = %CQL_SWITCH
+VCQL.VCQL_switch = %VCQL_SWITCH
+VCQL.network_random_seed = %RANDOM_SEED
+VCQL.explore_size = %EXPLORE_SIZE
+
+BackGroundActors.Actor.dim_observation = %DIM_OBS
+BackGroundActors.Actor.dim_action = %DIM_ACTIONS
+
+BGActors.dim_obs = %DIM_OBS
+BGActors.dim_actions = %DIM_ACTIONS
+
+run_sorl.episode = %EPISODE
+run_sorl.len_step = %STEP
+run_sorl.representation_index = %REPRESENT_INDEX
+run_sorl.representation_budget = %REPRESENT_BUDGET
+run_sorl.num_agent = %NUM_AGENT
+run_sorl.dim_obs = %DIM_OBS
+run_sorl.target_update_epi = 5
+run_sorl.min_budget = %MIN_BUDGET
+run_sorl.max_budget = %MAX_BUDGET
+run_sorl.fixed_random_seed = %FIXED_RANDOM_SEED
+run_sorl.iteration = %ITERATION
+run_sorl.save_path = %SAVE_PATH
+run_sorl.load_path = %LOAD_PATH
+run_sorl.store_ranking_log = False
+run_sorl.gpu = %GPU
+run_sorl.load_previous_iteration_network = %LOAD_PREVIOUS_NETWORK
+run_sorl.explore_size = %EXPLORE_SIZE
+run_sorl.saved_trained_net = True
+run_sorl.evaluation_interval  = %EVALUATION_INTERVAL
+run_sorl.network_random_seed = %RANDOM_SEED
+run_sorl.cql_rate = %CQL_LOSS_RATE
+run_sorl.vcql_rate = %VCQL_LOSS_RATE
+run_sorl.TD_error_rate = %TD_LOSS_RATE
+run_sorl.TD_switch = %TD_SWITCH
+run_sorl.CQL_switch = %CQL_SWITCH
+run_sorl.VCQL_switch = %VCQL_SWITCH
+run_sorl.algorithm_name = %ALGORITHM
+
+OnlineExplorationPolicy.sigma = 1
+OnlineExplorationPolicy.lamda = 10
+OnlineExplorationPolicy.sample_num = 100
+OnlineExplorationPolicy.sample_range = 3
+OnlineExplorationPolicy.sample_way = "weighted"
+

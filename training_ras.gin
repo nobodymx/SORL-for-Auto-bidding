@@ -1,0 +1,104 @@
+import sdk.Model.DDPG
+import sdk.Model.BackGroundActors
+import sdk.Agent.Agents
+import sdk.Environment.RealAdvertisingSystem
+import sdk.Common.Utils
+import run.run_ras
+import gin
+
+RANDOM_SEED = 0
+
+EPISODE = 10000000
+STEP = 96
+BUFFER_SIZE = 10000
+SAMPLE_SIZE = 2000
+NUM_AGENT = 100
+DIM_OBS = 3
+DIM_ACTIONS = 1
+TRAIN_MODE = "train"
+TEST_MODE = "test"
+REPRESENT_INDEX = 0
+STORE_RANKING_LOG = False
+CRITIC_LR = 0.0001
+ACTOR_LR = 0.0001
+TAU = 0.3
+GPU = '0'
+EVALUATION_INTERVAL = 5
+TERMINAL_BUDGET_THRESHOLD = 5
+Q_TRAIN_ITE = 2
+ACTOR_TRAIN_ITE = 1
+
+MAX_BUDGET = 4000
+MIN_BUDGET = 1000
+MAX_PV_NUM = 500
+MIN_PV_NUM = 100
+REPRESENT_BUDGET = 1500
+
+
+RealAdvertisingSystem.num_of_campaign = %NUM_AGENT
+RealAdvertisingSystem.reserve_price = 0.01
+RealAdvertisingSystem.T = %STEP
+RealAdvertisingSystem.random_seed = %RANDOM_SEED
+RealAdvertisingSystem.min_pv_num = %MIN_PV_NUM
+RealAdvertisingSystem.max_pv_num = %MAX_PV_NUM
+RealAdvertisingSystem.terminate_threshold = %TERMINAL_BUDGET_THRESHOLD
+
+random_sampling.sample_number = %SAMPLE_SIZE
+random_sampling.buffer_size = %BUFFER_SIZE
+
+normalize_state.num_step = %STEP
+normalize_state.max_budget = %MAX_BUDGET
+
+Agents.num_agent = %NUM_AGENT
+Agents.algorithm = @DDPG
+Agents.bgactors = @BGActors
+Agents.representation_index = %REPRESENT_INDEX
+Agents.dim_obs = %DIM_OBS
+Agents.random_seed = %RANDOM_SEED
+Agents.stop_threshold = %TERMINAL_BUDGET_THRESHOLD
+
+
+DDPG.Critic.dim_observation = %DIM_OBS
+DDPG.Critic.dim_action = %DIM_ACTIONS
+
+DDPG.Actor.dim_observation = %DIM_OBS
+DDPG.Actor.dim_action = %DIM_ACTIONS
+
+DDPG.dim_obs = %DIM_OBS
+DDPG.dim_actions = %DIM_ACTIONS
+DDPG.gamma = 1
+DDPG.tau = %TAU
+DDPG.critic_lr = %CRITIC_LR
+DDPG.actor_lr = %ACTOR_LR
+DDPG.buffer_size = %BUFFER_SIZE
+DDPG.sample_size = %SAMPLE_SIZE
+DDPG.Q_train_ite = %Q_TRAIN_ITE
+DDPG.Actor_train_ite = %ACTOR_TRAIN_ITE
+
+BackGroundActors.Actor.dim_observation = %DIM_OBS
+BackGroundActors.Actor.dim_action = %DIM_ACTIONS
+
+BGActors.dim_obs = %DIM_OBS
+BGActors.dim_actions = %DIM_ACTIONS
+BGActors.random_seed = %RANDOM_SEED
+
+run_ras.episode = %EPISODE
+run_ras.len_step = %STEP
+run_ras.num_agent = %NUM_AGENT
+run_ras.dim_obs = %DIM_OBS
+run_ras.test_mode = %TEST_MODE
+run_ras.train_mode = %TRAIN_MODE
+run_ras.target_update_epi = 5
+run_ras.saved_trained_net = True
+run_ras.save_path = "saved_models/RAS"
+run_ras.test_flag = True
+run_ras.min_budget = %MIN_BUDGET
+run_ras.max_budget = %MAX_BUDGET
+run_ras.store_ranking_log = %STORE_RANKING_LOG
+run_ras.random_seed = %RANDOM_SEED
+run_ras.evaluation_interval = %EVALUATION_INTERVAL
+run_ras.gpu = %GPU
+run_ras.representation_budget = %REPRESENT_BUDGET
+run_ras.representation_index = %REPRESENT_INDEX
+run_ras.draw_actions_flag = True
+
